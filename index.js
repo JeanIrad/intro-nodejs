@@ -1,10 +1,10 @@
-const fs = require("fs");
-const http = require("http");
-const url = require("url");
+const fs = require('fs');
+const http = require('http');
+const url = require('url');
 
-const slugify = require("slugify");
+const slugify = require('slugify');
 
-const replaceTemplate = require("./modules/replaceTemplate");
+const replaceTemplate = require('./modules/replaceTemplate');
 ///////////////////////////////////
 
 // FILES
@@ -37,19 +37,21 @@ const replaceTemplate = require("./modules/replaceTemplate");
 const checkContent =
   '<div style="background: #666; padding: 20px; text-align: center;"> <h1 style="color: #222;"> this is to check my website</h1></div>';
 
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
+const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
+// console.log(slugs);
 const overviewTemp = fs.readFileSync(
   `${__dirname}/templates/template_overview.html`,
-  "utf-8"
+  'utf-8'
 );
 const cardTemp = fs.readFileSync(
   `${__dirname}/templates/template_card.html`,
-  "utf-8"
+  'utf-8'
 );
 const productTemp = fs.readFileSync(
   `${__dirname}/templates/template_product.html`,
-  "utf-8"
+  'utf-8'
 );
 
 // my checking for writing a brand new static html file
@@ -57,7 +59,7 @@ const html = fs.writeFileSync(
   `${__dirname}/templates/check.html`,
   checkContent
 );
-const readHtml = fs.readFileSync(`${__dirname}/templates/check.html`, "utf-8");
+const readHtml = fs.readFileSync(`${__dirname}/templates/check.html`, 'utf-8');
 
 const server = http.createServer((req, res) => {
   // console.log(req.url);
@@ -66,38 +68,38 @@ const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
 
   // OVERVIEW PAGE
-  if (pathname === "/" || pathname === "/overview") {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, {
-      "content-type": "text/html",
+      'content-type': 'text/html',
     });
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(cardTemp, el))
-      .join("");
-    const output = overviewTemp.replace("{%PRODUCT_CARDS%}", cardsHtml);
+      .join('');
+    const output = overviewTemp.replace('{%PRODUCT_CARDS%}', cardsHtml);
     // console.log(cardsHtml)
     res.end(output);
   }
   // PRODUCT PAGE
-  else if (pathname === "/product") {
+  else if (pathname === '/product') {
     const product = dataObj[query.id];
     res.writeHead(200, {
-      "content-type": "text/html",
+      'content-type': 'text/html',
     });
     const output = replaceTemplate(productTemp, product);
     res.end(output);
   }
   // API
-  else if (pathname === "/api") {
+  else if (pathname === '/api') {
     //    codes
     res.writeHead(200, {
-      "content-type": "application/json",
+      'content-type': 'application/json',
     });
     res.end(data);
   }
   // NOT FOUND PAGE
   else {
     res.writeHead(404, {
-      "content-type": "text/html",
+      'content-type': 'text/html',
       // "my-own-header": "Hello World!",
     });
     res.end(readHtml);
@@ -105,8 +107,8 @@ const server = http.createServer((req, res) => {
   //   res.end("Hello From the server!");
 });
 
-server.listen(8000, "127.0.0.2", () => {
-  console.log("Listening to requests on port 8000");
+server.listen(8000, '127.0.0.2', () => {
+  console.log('Listening to requests on port 8000');
 });
 /*
 
